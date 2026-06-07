@@ -1,0 +1,92 @@
+/* Override examples for @scanupload/qr-code-generator-vanilla */
+
+.sqg-overlay {
+  background: rgba(225, 255, 255, 0.95);
+}
+
+.sqg-spinner {
+  border-top-color: #e11d48;
+}
+
+.sqg-loading-text {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.sqg-error-text {
+  color: #e11d48;
+  font-weight: 600;
+}
+
+.sqg-retry-btn {
+  background: #1e3a5f;
+  border-radius: 0.5rem;
+}
+
+.sqg-retry-btn:hover {
+  background: #1e40af;
+}
+
+.sqg-header-title {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.sqg-qr-wrapper {
+  border: 2px dotted #6366f1;
+  border-radius: 0.75rem;
+  padding: 0.2rem;
+}
+
+.sqg-qr-wrapper:hover {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  transform: none;
+}
+
+.sqg-logo--connected {
+  background: linear-gradient(to right, #6ee7b7, #10b981);
+}
+
+.sqg-logo--disconnected {
+  background: linear-gradient(to right, #fca5a5, #ef4444);
+}
+
+.sqg-reload-btn {
+  background: #1e3a5f;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.sqg-reload-btn:hover {
+  background: #1e40af;
+}
+
+.sqg-file-grid {
+  gap: 0.15rem;
+}
+
+.sqg-file-card {
+  border-color: #6366f1;
+  border-radius: 0.5rem;
+}
+
+.sqg-file-name {
+  font-size: 0.7rem;
+  color: #4b5563;
+}
+
+.sqg-file-list {
+  gap: 0.375rem;
+}
+
+.sqg-file-list-item {
+  border-color: #e5e7eb;
+  border-radius: 0.375rem;
+}
+
+.sqg-file-list-name {
+  font-size: 0.8rem;
+  color: #111827;
+}

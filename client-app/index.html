@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="msvalidate.01" content="171D0493B9C0AC5CE25D5F9E64BB16EC" />
+    <title>ScanUpload Vanilla Example</title>
+  </head>
+  <body>
+    <div id="app" class="bg-gray-100 h-screen w-screen overflow-hidden">
+      <div
+        class="flex items-center justify-center h-full w-full p-4 box-border overflow-hidden"
+      >
+        <form
+          id="example-form"
+          class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full"
+        >
+          <h1 class="text-2xl font-bold text-center mb-1">JS Example Form</h1>
+
+          <section class="mb-4">
+            <h2 class="block text-sm font-medium text-left text-gray-700 mb-2">
+              QR Code generator options
+            </h2>
+
+            <div class="flex flex-col space-y-1.5">
+              <label class="flex items-center" for="show-logo">
+                <input
+                  id="show-logo"
+                  name="show-logo"
+                  type="checkbox"
+                  checked
+                />
+                <span
+                  class="text-sm font-medium text-gray-700 select-none cursor-pointer ml-2"
+                  >Show Logo</span
+                >
+              </label>
+
+              <label class="flex items-center" for="click-reload">
+                <input
+                  id="click-reload"
+                  name="click-reload"
+                  type="checkbox"
+                  checked
+                />
+                <span
+                  class="text-sm font-medium text-gray-700 select-none cursor-pointer ml-2"
+                  >Click QR code to reload</span
+                >
+              </label>
+
+              <label class="flex items-center" for="show-header">
+                <input
+                  id="show-header"
+                  name="show-header"
+                  type="checkbox"
+                  checked
+                />
+                <span
+                  class="text-sm font-medium text-gray-700 select-none cursor-pointer ml-2"
+                  >Show header</span
+                >
+              </label>
+
+              <div class="flex items-center mt-3">
+                <label
+                  for="header-text"
+                  class="text-sm font-medium text-gray-700 select-none cursor-pointer w-24 text-left"
+                  >Header text</label
+                >
+                <input
+                  id="header-text"
+                  name="header-text"
+                  type="text"
+                  value="Scan to upload"
+                  class="w-60 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                />
+              </div>
+
+              <div class="flex flex-col gap-0 mt-3">
+                <div class="text-sm font-medium text-gray-700 text-left">
+                  File preview mode
+                </div>
+                <div class="flex flex-row items-start mt-2 space-x-4">
+                  <label
+                    class="flex items-center cursor-pointer group"
+                    for="preview-list"
+                  >
+                    <input
+                      id="preview-list"
+                      type="radio"
+                      name="file-preview-mode"
+                      value="list"
+                      checked
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span
+                      class="ml-3 text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors"
+                      >List</span
+                    >
+                  </label>
+
+                  <label
+                    class="flex items-center cursor-pointer group"
+                    for="preview-grid"
+                  >
+                    <input
+                      id="preview-grid"
+                      type="radio"
+                      name="file-preview-mode"
+                      value="grid"
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span
+                      class="ml-3 text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors"
+                      >Grid</span
+                    >
+                  </label>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-0 mt-3">
+                <div class="text-sm font-medium text-gray-700 text-left">
+                  Qr Code size
+                </div>
+                <div class="flex flex-row items-start mt-2 space-x-4 flex-wrap">
+                  <label
+                    class="flex items-center cursor-pointer group"
+                    for="size-small"
+                  >
+                    <input
+                      id="size-small"
+                      type="radio"
+                      name="qr-size"
+                      value="small"
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span
+                      class="ml-3 text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors"
+                      >Small</span
+                    >
+                  </label>
+
+                  <label
+                    class="flex items-center cursor-pointer group"
+                    for="size-medium"
+                  >
+                    <input
+                      id="size-medium"
+                      type="radio"
+                      name="qr-size"
+                      value="medium"
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span
+                      class="ml-3 text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors"
+                      >Medium</span
+                    >
+                  </label>
+
+                  <label
+                    class="flex items-center cursor-pointer group"
+                    for="size-large"
+                  >
+                    <input
+                      id="size-large"
+                      type="radio"
+                      name="qr-size"
+                      value="large"
+                      checked
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span
+                      class="ml-3 text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors"
+                      >Large</span
+                    >
+                  </label>
+
+                  <label
+                    class="flex items-center cursor-pointer group"
+                    for="size-xlarge"
+                  >
+                    <input
+                      id="size-xlarge"
+                      type="radio"
+                      name="qr-size"
+                      value="xlarge"
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span
+                      class="ml-3 text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors"
+                      >Extra Large</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mb-4">
+            <div id="widget-container"></div>
+            <p
+              id="widget-error"
+              class="mt-1 text-sm text-center text-red-600 min-h-5"
+              aria-live="polite"
+            ></p>
+          </section>
+
+          <button
+            id="download-button"
+            type="submit"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Download Files
+          </button>
+          <p
+            id="download-error"
+            class="mt-1 text-sm text-center text-red-600 min-h-5"
+            aria-live="polite"
+          ></p>
+
+          <p class="mt-3 text-center text-sm">
+            <a
+              href="https://app.scanupload.net/"
+              class="text-blue-600 hover:text-blue-800 underline"
+              >Back to ScanUpload</a
+            >
+          </p>
+          <p class="mt-2 text-center text-sm text-gray-500">
+            View the
+            <a
+              href="https://github.com/donaldasante/scanupload.example.python-and-javascript"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 underline"
+              >source code on GitHub</a
+            >
+          </p>
+        </form>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

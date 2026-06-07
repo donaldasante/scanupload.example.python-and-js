@@ -1,0 +1,8 @@
+# ScanUpload Python Example — dependencies
+# Install:  pip install -r requirements.txt
+
+# ScanUpload API client (ASGI extras include FastAPI, Starlette, uvicorn)
+scan-upload-api-client[asgi]
+
+# .env file loading
+python-dotenv>=1.0.0

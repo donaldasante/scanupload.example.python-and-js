@@ -1,0 +1,14 @@
+.git
+.gitignore
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.env.local
+.DS_Store
+README.md
+Dockerfile
+Dockerfile.dev # Don't copy the Dockerfile into itself
+Dockerfile.prod
+docker-compose.yml
+dist

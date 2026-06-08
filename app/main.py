@@ -15,14 +15,22 @@ or:
 """
 
 import io
+import logging
 import os
 import zipfile
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Path, Request
 from fastapi.responses import Response
+
+logger = logging.getLogger("scanupload.example")
+
+# Allowed shape for a ScanUpload session id. Restricting the character set
+# prevents header injection via the Content-Disposition filename below.
+_SESSION_ID_PATTERN = r"^[A-Za-z0-9_-]{1,128}$"
 
 from scan_upload_api_client import (
     KeycloakClient,
@@ -122,7 +130,10 @@ async def root():
 
 
 @app.get("/download-file/{session_id}")
-async def download_file(session_id: str, request: Request):
+async def download_file(
+    request: Request,
+    session_id: Annotated[str, Path(pattern=_SESSION_ID_PATTERN)],
+):
     """
     Download file(s) uploaded in a ScanUpload session and stream them back
     to the browser.
@@ -145,9 +156,12 @@ async def download_file(session_id: str, request: Request):
         try:
             await api_client.download_async(session_id, collect_file)
         except Exception as exc:
+            # Log full details server-side; return a generic message so internal
+            # details about the hub are not leaked to the caller.
+            logger.exception("Failed to download session %s from ScanUpload hub", session_id)
             raise HTTPException(
                 status_code=502,
-                detail=f"Failed to download from ScanUpload hub: {exc}",
+                detail="Failed to download from ScanUpload hub.",
             ) from exc
 
     if not files_received:
@@ -171,16 +185,19 @@ async def download_file(session_id: str, request: Request):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     ssl_certfile = os.getenv("UVICORN_SSL_CERTFILE") or None
     ssl_keyfile = os.getenv("UVICORN_SSL_KEYFILE") or None
+    host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "7021"))
 
     scheme = "https" if (ssl_certfile and ssl_keyfile) else "http"
-    print(f"Starting ScanUpload Python example on {scheme}://localhost:{port}")
+    logger.info("Starting ScanUpload Python example on %s://%s:%s", scheme, host, port)
 
     uvicorn.run(
         app,
-        host="0.0.0.0",
+        host=host,
         port=port,
         ssl_certfile=ssl_certfile,
         ssl_keyfile=ssl_keyfile,

@@ -120,7 +120,7 @@ async function handleDownload(event) {
     );
     if (!response.ok) {
       const json = await response.json().catch(() => ({}));
-      downloadError.textContent = json.error || "Download failed.";
+      downloadError.textContent = json.detail || "Download failed.";
       return;
     }
 
@@ -140,8 +140,12 @@ async function handleDownload(event) {
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = fileName;
+    document.body.appendChild(anchor);
     anchor.click();
-    URL.revokeObjectURL(url);
+    anchor.remove();
+    // Defer revocation so the browser has started the download before the
+    // object URL is released (revoking synchronously can cancel it).
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   } catch {
     downloadError.textContent = "Download failed. Please try again.";
   } finally {

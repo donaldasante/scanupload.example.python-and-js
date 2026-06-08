@@ -13,14 +13,11 @@ web app.
 
 ## How it works
 
-```
-Mobile device  ──(QR scan)──►  ScanUpload Hub
-                                     │
-                        /scanupload-api/*  (proxied + bearer token injected)
-                                     │
-                               FastAPI (main.py)
-                                     │
-                         GET /download-file/{session_id}
+```mermaid
+flowchart TD
+    A[Mobile device] -->|QR scan| B[ScanUpload Hub]
+    B -->|"/scanupload-api/* (proxied + bearer token injected)"| C[FastAPI - main.py]
+    C --> D["GET /download-file/{session_id}"]
 ```
 
 - **`ScanUploadProxyMiddleware`** intercepts every `/scanupload-api/*` request,
@@ -101,23 +98,24 @@ KEYCLOAK_CLIENT_SECRET=your-client-secret
 
 All available settings:
 
-| Variable                         | Default                                    | Description                       |
-| -------------------------------- | ------------------------------------------ | --------------------------------- |
-| `KEYCLOAK_CLIENT_ID`             | _(required)_                               | Your ScanUpload client ID         |
-| `KEYCLOAK_CLIENT_SECRET`         | _(required)_                               | Your ScanUpload client secret     |
-| `KEYCLOAK_SERVER_URL`            | `https://identity.scanupload.net/`         | Keycloak server URL               |
-| `KEYCLOAK_REALM`                 | `scanupload-hub`                           | Keycloak realm                    |
-| `KEYCLOAK_SCOPE`                 | `openid profile email scanupload.hub`      | Token scopes                      |
-| `SCANUPLOAD_TARGET_BASE_URL`     | `https://hub.scanupload.net/api/front-end` | ScanUpload hub proxy target       |
-| `SCANUPLOAD_ROUTE_PREFIX`        | `/scanupload-api`                          | Route prefix exposed by this app  |
-| `SCANUPLOAD_TOKEN_ROUTE`         | `/scanupload-api/token`                    | Token endpoint route              |
-| `SCANUPLOAD_STRIP_ROUTE_PREFIX`  | `true`                                     | Strip prefix before forwarding    |
-| `SCANUPLOAD_REQUEST_TIMEOUT`     | `90`                                       | Proxy request timeout (seconds)   |
-| `SCANUPLOAD_API_CLIENT_BASE_URL` | `https://hub.scanupload.net`               | Base URL for file downloads       |
-| `PORT`                           | `7021`                                     | Port the Python server listens on |
-| `UVICORN_SSL_CERTFILE`           | _(optional)_                               | Path to TLS certificate file      |
-| `UVICORN_SSL_KEYFILE`            | _(optional)_                               | Path to TLS private key file      |
-| `SCANUPLOAD_DOTENV_PATH`         | _(optional)_                               | Override `.env` file path         |
+| Variable                         | Default                                    | Description                        |
+| -------------------------------- | ------------------------------------------ | ---------------------------------- |
+| `KEYCLOAK_CLIENT_ID`             | _(required)_                               | Your ScanUpload client ID          |
+| `KEYCLOAK_CLIENT_SECRET`         | _(required)_                               | Your ScanUpload client secret      |
+| `KEYCLOAK_SERVER_URL`            | `https://identity.scanupload.net/`         | Keycloak server URL                |
+| `KEYCLOAK_REALM`                 | `scanupload-hub`                           | Keycloak realm                     |
+| `KEYCLOAK_SCOPE`                 | `openid profile email scanupload.hub`      | Token scopes                       |
+| `SCANUPLOAD_TARGET_BASE_URL`     | `https://hub.scanupload.net/api/front-end` | ScanUpload hub proxy target        |
+| `SCANUPLOAD_ROUTE_PREFIX`        | `/scanupload-api`                          | Route prefix exposed by this app   |
+| `SCANUPLOAD_TOKEN_ROUTE`         | `/scanupload-api/token`                    | Token endpoint route               |
+| `SCANUPLOAD_STRIP_ROUTE_PREFIX`  | `true`                                     | Strip prefix before forwarding     |
+| `SCANUPLOAD_REQUEST_TIMEOUT`     | `90`                                       | Proxy request timeout (seconds)    |
+| `SCANUPLOAD_API_CLIENT_BASE_URL` | `https://hub.scanupload.net`               | Base URL for file downloads        |
+| `HOST`                           | `127.0.0.1`                                | Address the Python server binds to |
+| `PORT`                           | `7021`                                     | Port the Python server listens on  |
+| `UVICORN_SSL_CERTFILE`           | _(optional)_                               | Path to TLS certificate file       |
+| `UVICORN_SSL_KEYFILE`            | _(optional)_                               | Path to TLS private key file       |
+| `SCANUPLOAD_DOTENV_PATH`         | _(optional)_                               | Override `.env` file path          |
 
 > **Warning:** Never commit `.env` to source control. It contains secrets.
 
@@ -212,10 +210,13 @@ python app/main.py
 Expected output:
 
 ```
-Starting ScanUpload Python example on https://localhost:7021
+INFO:scanupload.example:Starting ScanUpload Python example on https://127.0.0.1:7021
 INFO:     Started server process [...]
-INFO:     Uvicorn running on https://0.0.0.0:7021 (Press CTRL+C to quit)
+INFO:     Uvicorn running on https://127.0.0.1:7021 (Press CTRL+C to quit)
 ```
+
+> The server binds to `127.0.0.1` (localhost) by default. To expose it on all
+> network interfaces (for example inside a container), set `HOST=0.0.0.0`.
 
 Alternatively, use uvicorn directly (useful for `--reload` during development):
 
@@ -277,7 +278,7 @@ While the server is running, visit:
 ### Port already in use
 
 ```
-[Errno 10048] error while attempting to bind on address ('0.0.0.0', 7021)
+[Errno 10048] error while attempting to bind on address ('127.0.0.1', 7021)
 ```
 
 Find and stop the process occupying the port:

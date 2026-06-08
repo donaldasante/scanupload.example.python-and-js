@@ -1,0 +1,30 @@
+services:
+  scanupload.python.example:
+    build:
+      context: .
+    container_name: scanupload-python-example
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      KEYCLOAK_CLIENT_ID: "${KEYCLOAK_CLIENT_ID}"
+      KEYCLOAK_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET}"
+    networks:
+      - appnet
+
+  scanupload.js.example.client:
+    build:
+      context: ./client-app
+    container_name: scanupload-js-example-client
+    ports:
+      - "3002:3002"
+    environment:
+      DOCKER: "true"
+    networks:
+      - appnet
+    depends_on:
+      - scanupload.python.example
+
+networks:
+  appnet:
+    driver: bridge

@@ -1,0 +1,134 @@
+# Docker
+# Build Docker images for the ScanUpload Python example app and JS client.
+# This pipeline runs in Azure DevOps only.
+# Secrets are stored securely in Azure DevOps variable groups.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  tags:
+    include:
+      - release.*
+
+resources:
+  - repo: self
+
+variables:
+  dockerRegistryServiceConnection: "gitlab-registry"
+
+stages:
+  - stage: Build
+    displayName: Build Docker images
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: ubuntu-latest
+        variables:
+          - group: "scanupload-python-example-variables"
+        steps:
+          - checkout: self
+            fetchDepth: 0
+          - task: Bash@3
+            displayName: "Set Docker Tag Variable"
+            inputs:
+              targetType: "inline"
+              script: |
+                # Example using Git tag name directly
+                echo "##vso[task.setvariable variable=dockerImageTag]$(Build.SourceBranchName).$(Build.BuildId)"
+                echo "##vso[task.setvariable variable=qaTag]qa"
+                # Example using short commit hash
+                # echo "##vso[task.setvariable variable=dockerImageTag]$(git rev-parse --short HEAD)"
+          - task: Docker@2
+            displayName: Build ScanUpload Python example API image
+            inputs:
+              command: buildAndPush
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: "asanteit/scanupload/scanupload-python-example-api"
+              dockerfile: "$(Build.SourcesDirectory)/Dockerfile"
+              buildContext: "$(Build.SourcesDirectory)"
+              tags: |
+                $(dockerImageTag)
+                $(qaTag)
+          - task: Docker@2
+            displayName: Build ScanUpload JS Client example image
+            inputs:
+              command: buildAndPush
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: "asanteit/scanupload/scanupload-js-client-example"
+              dockerfile: "$(Build.SourcesDirectory)/client-app/Dockerfile_Prod"
+              buildContext: "$(Build.SourcesDirectory)/client-app"
+              tags: |
+                $(dockerImageTag)
+                $(qaTag)
+          - script: |
+              git config --global user.email "azdo_ci@scanupload.net"
+              git config --global user.name "Azure DevOps CI"
+              git config --global http.postBuffer 524288000
+
+              git remote add github https://$(GITHUB_PAT)@github.com/donaldasante/scanupload.example.python.git || true
+
+              git push github HEAD:refs/heads/main
+              git push github --tags
+            displayName: Mirror repo to GitHub
+
+  - stage: DeployScanUploadPythonExample
+    displayName: Deploy ScanUpload Python example to QA Server
+    jobs:
+      - job: DeployPythonExampleJob
+        variables:
+          - group: "scanupload-python-example-variables"
+        dependsOn: []
+        pool:
+          name: "ScanUpload QA New" # your self-hosted agent pool
+        steps:
+          - task: Docker@2
+            displayName: Login to private registry
+            inputs:
+              command: login
+              containerRegistry: $(dockerRegistryServiceConnection)
+          - script: |
+              outdir=/home/donald/apps/scanupload.python.example
+              {
+                  echo "dockerImageTag=qa"
+                  echo "containerName=$(containerName)"
+                  echo "subDomain=$(subDomain)"
+                  echo "KEYCLOAK_CLIENT_ID=$(KEYCLOAK_CLIENT_ID)"
+                  echo "KEYCLOAK_CLIENT_SECRET=$(KEYCLOAK_CLIENT_SECRET)"
+              } > "$outdir/.env"
+            displayName: "Generate .env file scanupload.python.example"
+          - script: |
+              cd /home/donald/apps/scanupload.python.example
+              docker compose down || true   # don't fail if nothing is running
+              docker compose pull           # ensure latest image
+              docker compose up -d --remove-orphans
+            displayName: Pull and run scanupload.python.example
+
+  - stage: DeployScanUploadJsClientExample
+    displayName: Deploy ScanUpload JS client example to QA Server
+    jobs:
+      - job: DeployJsClientExampleJob
+        variables:
+          - group: "scanupload-js-example-client-variables"
+        dependsOn: []
+        pool:
+          name: "ScanUpload QA New" # your self-hosted agent pool
+        steps:
+          - task: Docker@2
+            displayName: Login to private registry
+            inputs:
+              command: login
+              containerRegistry: $(dockerRegistryServiceConnection)
+          - script: |
+              outdir=/home/donald/apps/scanupload.js.client.example
+              {
+                  echo "dockerImageTag=qa"
+                  echo "containerName=$(containerName)"
+                  echo "subDomain=$(subDomain)"
+              } > "$outdir/.env"
+            displayName: "Generate .env file scanupload.js.client.example"
+          - script: |
+              cd /home/donald/apps/scanupload.js.client.example
+              docker compose down || true   # don't fail if nothing is running
+              docker compose pull           # ensure latest image
+              docker compose up -d --remove-orphans
+            displayName: Pull and run scanupload.js.client.example

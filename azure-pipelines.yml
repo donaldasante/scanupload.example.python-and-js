@@ -65,7 +65,7 @@ stages:
               git config --global user.name "Azure DevOps CI"
               git config --global http.postBuffer 524288000
 
-              git remote add github https://$(GITHUB_PAT)@github.com/donaldasante/scanupload.example.python.git || true
+              git remote add github https://$(GITHUB_PAT)@github.com/donaldasante/scanupload.example.python-and-js.git || true
 
               git push github HEAD:refs/heads/main
               git push github --tags

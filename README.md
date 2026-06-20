@@ -4,6 +4,43 @@
 ability to use QR codes to scan and upload files directly from a mobile device
 to your webapp.
 
+# Quickstart
+
+1. Please generate a client id and secret at
+   [ScanUpload](https://app.scanupload.net/) and save the details.
+
+## Docker
+
+You need to have
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) and git
+installed on your machine.
+
+Open a command line, powershell or bash session and clone the git repo into
+
+```sh
+git clone https://github.com/donaldasante/scanupload.example.python-and-js.git
+```
+
+Goto the repo folder (`cd .\scanupload.example.python-and-js`) and rename the
+.env.example to .env. Replace the placeholders with your client id, secret and
+save the file.
+
+```sh
+KEYCLOAK_CLIENT_ID=your-client-id
+KEYCLOAK_CLIENT_SECRET=your-client-secret
+```
+
+Run docker compose
+
+```sh
+docker compose build
+docker compose up -d
+```
+
+Navigate to http://localhost:3002.
+
+---
+
 # ScanUpload Python Example
 
 A FastAPI application that integrates the
@@ -112,86 +149,14 @@ All available settings:
 | `SCANUPLOAD_REQUEST_TIMEOUT`     | `90`                                       | Proxy request timeout (seconds)    |
 | `SCANUPLOAD_API_CLIENT_BASE_URL` | `https://hub.scanupload.net`               | Base URL for file downloads        |
 | `HOST`                           | `127.0.0.1`                                | Address the Python server binds to |
-| `PORT`                           | `7021`                                     | Port the Python server listens on  |
-| `UVICORN_SSL_CERTFILE`           | _(optional)_                               | Path to TLS certificate file       |
-| `UVICORN_SSL_KEYFILE`            | _(optional)_                               | Path to TLS private key file       |
+| `PORT`                           | `8080`                                     | Port the Python server listens on  |
 | `SCANUPLOAD_DOTENV_PATH`         | _(optional)_                               | Override `.env` file path          |
 
 > **Warning:** Never commit `.env` to source control. It contains secrets.
 
 ---
 
-## 3. Create a TLS certificate (recommended)
-
-Running over HTTPS is recommended. Use **mkcert** to create a locally-trusted
-certificate without browser warnings.
-
-### Install mkcert
-
-**PowerShell**
-
-```powershell
-# Using winget
-winget install FiloSottile.mkcert
-
-# Or using Chocolatey
-choco install mkcert
-```
-
-**Bash**
-
-```bash
-# Using Homebrew (macOS/Linux)
-brew install mkcert
-
-# Or on Linux with apt
-sudo apt install mkcert
-```
-
-### Install the local Certificate Authority (one-time)
-
-```powershell
-mkcert -install
-```
-
-This adds a trusted CA to your system and browser stores so certificates signed
-by it are trusted automatically.
-
-### Generate a certificate for localhost
-
-Run this from the project root so the files are stored alongside the project:
-
-**PowerShell**
-
-```powershell
-cd path\to\ScanUpload.Example.Python
-mkcert localhost 127.0.0.1
-```
-
-**Bash**
-
-```bash
-cd path/to/ScanUpload.Example.Python
-mkcert localhost 127.0.0.1
-```
-
-Two files are created:
-
-- `localhost+1.pem` — certificate
-- `localhost+1-key.pem` — private key
-
-### Add the certificate paths to `.env`
-
-```ini
-UVICORN_SSL_CERTFILE=path/to/ScanUpload.Example.Python/localhost+1.pem
-UVICORN_SSL_KEYFILE=path/to/ScanUpload.Example.Python/localhost+1-key.pem
-```
-
-When both values are set the server starts on `https://localhost:7021`.
-
----
-
-## 4. Run the backend
+## 3. Run the backend
 
 **PowerShell**
 
@@ -210,9 +175,9 @@ python app/main.py
 Expected output:
 
 ```
-INFO:scanupload.example:Starting ScanUpload Python example on https://127.0.0.1:7021
+INFO:scanupload.example:Starting ScanUpload Python example on http://127.0.0.1:8080
 INFO:     Started server process [...]
-INFO:     Uvicorn running on https://127.0.0.1:7021 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 ```
 
 > The server binds to `127.0.0.1` (localhost) by default. To expose it on all
@@ -224,18 +189,14 @@ Alternatively, use uvicorn directly (useful for `--reload` during development):
 
 ```powershell
 cd app
-uvicorn main:app --port 7021 --reload `
-  --ssl-certfile ../localhost+1.pem `
-  --ssl-keyfile ../localhost+1-key.pem
+uvicorn main:app --port 8080 --reload
 ```
 
 **Bash**
 
 ```bash
 cd app
-uvicorn main:app --port 7021 --reload \
-  --ssl-certfile ../localhost+1.pem \
-  --ssl-keyfile ../localhost+1-key.pem
+uvicorn main:app --port 8080 --reload
 ```
 
 Verify the backend is running:
@@ -243,20 +204,20 @@ Verify the backend is running:
 **PowerShell**
 
 ```powershell
-Invoke-RestMethod https://localhost:7021/
+Invoke-RestMethod http://localhost:8080/
 # {"message":"ScanUpload API client is active"}
 ```
 
 **Bash**
 
 ```bash
-curl https://localhost:7021/
+curl http://localhost:8080/
 # {"message":"ScanUpload API client is active"}
 ```
 
 ---
 
-## 5. API endpoints
+## 4. API endpoints
 
 | Method | Path                          | Description                            |
 | ------ | ----------------------------- | -------------------------------------- |
@@ -268,8 +229,8 @@ curl https://localhost:7021/
 
 While the server is running, visit:
 
-- Swagger UI: [https://localhost:7021/docs](https://localhost:7021/docs)
-- ReDoc: [https://localhost:7021/redoc](https://localhost:7021/redoc)
+- Swagger UI: [http://localhost:8080/docs](http://localhost:8080/docs)
+- ReDoc: [http://localhost:8080/redoc](http://localhost:8080/redoc)
 
 ---
 
@@ -278,7 +239,7 @@ While the server is running, visit:
 ### Port already in use
 
 ```
-[Errno 10048] error while attempting to bind on address ('127.0.0.1', 7021)
+[Errno 10048] error while attempting to bind on address ('127.0.0.1', 8080)
 ```
 
 Find and stop the process occupying the port:
@@ -287,7 +248,7 @@ Find and stop the process occupying the port:
 
 ```powershell
 # Find the PID
-netstat -ano | findstr :7021
+netstat -ano | findstr :8080
 
 # Stop it (replace 12345 with the actual PID)
 Stop-Process -Id 12345 -Force
@@ -297,7 +258,7 @@ Stop-Process -Id 12345 -Force
 
 ```bash
 # Find the PID
-lsof -i :7021
+lsof -i :8080
 
 # Stop it (replace 12345 with the actual PID)
 kill 12345
@@ -321,8 +282,3 @@ ScanUploadProxyException: Token provider not found on app.state.scan_upload_toke
 The middleware requires the token provider to be stored on
 `app.state.scan_upload_token_provider`. Verify this is set in `lifespan()`
 inside `main.py`.
-
-### Certificate not trusted
-
-If you see browser SSL warnings, re-run `mkcert -install` to ensure the local CA
-is trusted, then regenerate the certificate.

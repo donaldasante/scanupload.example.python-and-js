@@ -5,7 +5,7 @@ const isDocker = process.env.DOCKER === "true";
 
 const apiTarget = isDocker
   ? "http://scanupload.python.example:8080"
-  : "https://localhost:7021";
+  : "http://localhost:8080";
 
 export default defineConfig({
   plugins: [tailwindcss()],

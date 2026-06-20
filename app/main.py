@@ -9,7 +9,7 @@ Demonstrates scan-upload-api-client integration using FastAPI.
 
 Run:
     pip install -r ../requirements.txt
-    uvicorn main:app --port 7021 --reload
+    uvicorn main:app --port 8080 --reload
 or:
     python main.py
 """
@@ -78,6 +78,7 @@ options = ScanUploadProxyOptions(
     keycloak_realm=os.getenv("KEYCLOAK_REALM", "scanupload-hub"),
     keycloak_client_id=_require("KEYCLOAK_CLIENT_ID"),
     keycloak_client_secret=_require("KEYCLOAK_CLIENT_SECRET"),
+    keycloak_scope=os.getenv("KEYCLOAK_SCOPE", "openid profile email scanupload.hub"),
 )
 
 # ---------------------------------------------------------------------------
@@ -187,18 +188,13 @@ async def download_file(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    ssl_certfile = os.getenv("UVICORN_SSL_CERTFILE") or None
-    ssl_keyfile = os.getenv("UVICORN_SSL_KEYFILE") or None
     host = os.getenv("HOST", "127.0.0.1")
-    port = int(os.getenv("PORT", "7021"))
+    port = int(os.getenv("PORT", "8080"))
 
-    scheme = "https" if (ssl_certfile and ssl_keyfile) else "http"
-    logger.info("Starting ScanUpload Python example on %s://%s:%s", scheme, host, port)
+    logger.info("Starting ScanUpload Python example on http://%s:%s", host, port)
 
     uvicorn.run(
         app,
         host=host,
         port=port,
-        ssl_certfile=ssl_certfile,
-        ssl_keyfile=ssl_keyfile,
     )

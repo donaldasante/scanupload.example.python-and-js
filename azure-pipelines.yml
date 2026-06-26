@@ -87,7 +87,7 @@ stages:
               command: login
               containerRegistry: $(dockerRegistryServiceConnection)
           - script: |
-              outdir=/home/donald/apps/scanupload.python.example
+              outdir=/home/donald/apps/scanupload/scanupload.python.example
               {
                   echo "dockerImageTag=qa"
                   echo "containerName=$(containerName)"
@@ -97,7 +97,7 @@ stages:
               } > "$outdir/.env"
             displayName: "Generate .env file scanupload.python.example"
           - script: |
-              cd /home/donald/apps/scanupload.python.example
+              cd /home/donald/apps/scanupload/scanupload.python.example
               docker compose down || true   # don't fail if nothing is running
               docker compose pull           # ensure latest image
               docker compose up -d --remove-orphans
@@ -119,7 +119,7 @@ stages:
               command: login
               containerRegistry: $(dockerRegistryServiceConnection)
           - script: |
-              outdir=/home/donald/apps/scanupload.js.client.example
+              outdir=/home/donald/apps/scanupload/scanupload.js.client.example
               {
                   echo "dockerImageTag=qa"
                   echo "containerName=$(containerName)"
@@ -127,7 +127,7 @@ stages:
               } > "$outdir/.env"
             displayName: "Generate .env file scanupload.js.client.example"
           - script: |
-              cd /home/donald/apps/scanupload.js.client.example
+              cd /home/donald/apps/scanupload/scanupload.js.client.example
               docker compose down || true   # don't fail if nothing is running
               docker compose pull           # ensure latest image
               docker compose up -d --remove-orphans
